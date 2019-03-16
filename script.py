@@ -1,6 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import tkinter
+import csv
+import matplotlib.pyplot as plt
+import numpy as np
+
+height = []
+names = []
+left = []
+i = 1
 
 # Range of Roll Number - User Input
 start_roll = int(input("Starting Roll Number: "))
@@ -56,5 +65,39 @@ def get_marks_of(rollNo, semester):
     except AttributeError:
         return ('<Not Found>')
 
+
+fw = open("result.csv","w")
+
 for roll in roll_tuple:
-    print(get_marks_of(roll, sem))
+    tup = get_marks_of(roll, sem)
+    print(tup)
+    nam = str(tup[0]).replace("'","")
+    sgp = str(tup[1]).replace("'","")
+    fw.write(nam+","+sgp+"\n")
+fw.close()
+
+with open('result.csv') as csvfile:
+    readCSV = csv.reader(csvfile, delimiter=',')
+    for row in readCSV:
+        print(row)
+        height.append(row[1])
+        na=str(row[0]).replace(" ", "\n")
+        names.append(na)
+left = np.arange(len(height))
+
+for i in range(len(height)):
+    min_idx = i
+    for j in range(i + 1, len(height)):
+        if height[min_idx] > height[j]:
+            min_idx = j
+    height[i], height[min_idx] = height[min_idx], height[i]
+    names[i], names[min_idx] = names[min_idx], names[i]
+
+plt.bar(left, height, tick_label=names,
+        width=0.9, color='green')
+plt.xlabel('Names')
+plt.ylabel('SGPA')
+plt.title('Results')
+plt.show()
+
+#169016180
